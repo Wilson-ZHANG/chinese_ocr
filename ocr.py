@@ -11,6 +11,15 @@ from ctpn.text_detect import text_detect
 from lib.fast_rcnn.config import cfg_from_file
 from densenet.model import predict as keras_densenet
 
+def crop(image_path, coors, save_dir):
+    if not os.path.exists(save_dir):
+        os.makedirs(save_dir)
+    image_name = os.path.split(image_path)[1].split('.')[0]
+    image = cv2.imread(image_path)
+    for index, coor in enumerate(coors):
+        x1, y1, x2, y2 = coor[0], coor[1], coor[4], coor[5]
+        roi_image = image[y1: y2 + 2, x1: x2 + 1]
+        cv2.imwrite(os.path.join(save_dir, image_name+'_{}.jpg'.format(index)), roi_image)
 
 def sort_box(box):
     """ 
@@ -82,6 +91,7 @@ def model(img, adjust=False):
     cfg_from_file('./ctpn/ctpn/text.yml')
     text_recs, img_framed, img = text_detect(img)
     text_recs = sort_box(text_recs)
+    print(text_recs)
     result = charRec(img, text_recs, adjust)
-    return result, img_framed
+    return result, img_framed,text_recs
 
