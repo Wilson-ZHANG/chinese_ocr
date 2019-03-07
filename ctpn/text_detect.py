@@ -63,8 +63,9 @@ def ctpn(img):
 def draw_boxes(img, boxes, scale):
     box_id = 0
     img = img.copy()
+    want_img = img.copy()
     text_recs = np.zeros((len(boxes), 8), np.int)
-    for box in boxes:
+    for i, box in enumerate(boxes):
         if np.linalg.norm(box[0] - box[1]) < 5 or np.linalg.norm(box[3] - box[0]) < 5:
             continue
 
@@ -78,6 +79,8 @@ def draw_boxes(img, boxes, scale):
         cv2.line(img, (int(box[6]), int(box[7])), (int(box[2]), int(box[3])), color, 2)
         cv2.line(img, (int(box[4]), int(box[5])), (int(box[6]), int(box[7])), color, 2)
 
+	roi_image = want_img[int(box[1]): int(box[7]) + 1, int(box[0]): int(box[6]) + 1]
+	cv2.imwrite('/home/qifan/projects/ocr/chinese_ocr/ctpn/coors/{}_{}.jpg'.format(len(boxes), i), roi_image)
         for i in range(8):
             text_recs[box_id, i] = box[i]
 
